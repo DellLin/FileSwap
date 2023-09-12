@@ -1,0 +1,44 @@
+<div class="card">
+  <p-treeTable [value]="contentTree" [columns]="CONTENT_COLUMN" [paginator]="true" [rows]="10" [scrollable]="true"
+    [tableStyle]="{'min-width':'50rem'}" [loading]="loading" scrollHeight="500px">
+    <ng-template pTemplate="caption">
+      <div class="flex align-items-center justify-content-between">
+        <p-fileUpload #fileUpload mode="basic" [maxFileSize]="100000000" [customUpload]="true"
+          (uploadHandler)="uploadFile($event, fileUpload)" [auto]="true" chooseLabel="Browse"></p-fileUpload>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns">
+          {{ col.header }}
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns; let i = index">
+          <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+
+          {{ rowData[col.field] }}
+        </td>
+        <td>
+          <div class="flex justify-content-end flex-wrap">
+            <div class="">
+              <button pButton *ngIf="rowData.type == 'file'" icon="pi pi-download" (click)="downloadFile(rowData)"
+                class="mr-1"></button>
+            </div>
+            <div>
+              <button pButton *ngIf="rowData.type == 'file'" icon="pi pi-trash" (click)="onDleteClick($event, rowNode)"
+                class="mr-1 p-button-danger"></button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+</div>
+
+
+<p-toast></p-toast>
+<p-confirmPopup></p-confirmPopup>
