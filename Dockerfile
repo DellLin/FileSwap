@@ -18,6 +18,12 @@ COPY . .
 WORKDIR "/src/."
 RUN dotnet build "FileSwap.csproj" -c $configuration -o /app/build
 
+FROM node:16-alpine as frontend
+WORKDIR /src
+COPY ./ClientApp .
+RUN npm install
+RUN npm run build -- --configuration production
+
 FROM build AS publish
 ARG configuration=Release
 RUN dotnet publish "FileSwap.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
@@ -25,4 +31,5 @@ RUN dotnet publish "FileSwap.csproj" -c $configuration -o /app/publish /p:UseApp
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=frontend /src/dist ./wwwroot
 ENTRYPOINT ["dotnet", "FileSwap.dll"]

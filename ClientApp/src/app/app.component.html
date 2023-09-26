@@ -4,7 +4,8 @@
     <ng-template pTemplate="caption">
       <div class="flex align-items-center justify-content-between">
         <p-fileUpload #fileUpload mode="basic" [maxFileSize]="100000000" [customUpload]="true"
-          (uploadHandler)="uploadFile($event, fileUpload)" [auto]="true" chooseLabel="Browse"></p-fileUpload>
+          (uploadHandler)="uploadFile($event, fileUpload)" [auto]="true" chooseLabel="Browse"
+          [multiple]="true"></p-fileUpload>
       </div>
     </ng-template>
     <ng-template pTemplate="header" let-columns>

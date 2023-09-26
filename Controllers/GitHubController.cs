@@ -1,8 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿using System.Threading;
+// Licensed to the .NET Foundation under one or more agreements.
 
 using Microsoft.AspNetCore.Mvc;
 using FileSwap.Services;
 using FileSwap.ViewModels;
+
 
 namespace FileSwap.Controllers;
 
@@ -32,16 +34,22 @@ public class GitHubController : ControllerBase
     }
     [HttpPost]
     [RequestSizeLimit(int.MaxValue)]
-    public async Task<ActionResult<ContentViewModel>> AddFile(IFormFile file)
+    public async Task<ActionResult<List<ContentViewModel>>> AddFile(IFormFile[] files)
     {
-        if (file == null)
-            return BadRequest("File is empty.");
 
-        var fileName = file.FileName;
-        var memoryStream = new MemoryStream();
-        file.CopyTo(memoryStream);
-        var newContentViewModel = await _gitHubService.UploadFile(fileName, memoryStream);
-        return newContentViewModel;
+        if (files.Length <= 0)
+            return BadRequest("File is empty.");
+        var result = new List<ContentViewModel>();
+        foreach (var file in files)
+        {
+            var fileName = file.FileName;
+            var memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            var newContentViewModel = await _gitHubService.UploadFile(fileName, memoryStream);
+
+            result.Add(newContentViewModel);
+        }
+        return result;
     }
     [HttpGet("{filePath}")]
     public async Task<FileResult> GetFile(string filePath)

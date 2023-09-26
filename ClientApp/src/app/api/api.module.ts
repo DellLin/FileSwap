@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { GitHubService } from './services/git-hub.service';
+import { WeatherForecastService } from './services/weather-forecast.service';
 
 /**
  * Module that provides all services and configuration.
@@ -15,6 +16,7 @@ import { GitHubService } from './services/git-hub.service';
   declarations: [],
   providers: [
     GitHubService,
+    WeatherForecastService,
     ApiConfiguration
   ],
 })

@@ -1,28 +1,15 @@
 /* tslint:disable */
 /* eslint-disable */
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 
 import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
+import { RequestBuilder } from '../request-builder';
 
-import { apiGitHubDelete } from '../fn/git-hub/api-git-hub-delete';
-import { ApiGitHubDelete$Params } from '../fn/git-hub/api-git-hub-delete';
-import { apiGitHubFilePathGet } from '../fn/git-hub/api-git-hub-file-path-get';
-import { ApiGitHubFilePathGet$Params } from '../fn/git-hub/api-git-hub-file-path-get';
-import { apiGitHubGet$Json } from '../fn/git-hub/api-git-hub-get-json';
-import { ApiGitHubGet$Json$Params } from '../fn/git-hub/api-git-hub-get-json';
-import { apiGitHubGet$Plain } from '../fn/git-hub/api-git-hub-get-plain';
-import { ApiGitHubGet$Plain$Params } from '../fn/git-hub/api-git-hub-get-plain';
-import { apiGitHubPost$Json } from '../fn/git-hub/api-git-hub-post-json';
-import { ApiGitHubPost$Json$Params } from '../fn/git-hub/api-git-hub-post-json';
-import { apiGitHubPost$Plain } from '../fn/git-hub/api-git-hub-post-plain';
-import { ApiGitHubPost$Plain$Params } from '../fn/git-hub/api-git-hub-post-plain';
-import { apiGitHubTestGet } from '../fn/git-hub/api-git-hub-test-get';
-import { ApiGitHubTestGet$Params } from '../fn/git-hub/api-git-hub-test-get';
 import { ContentViewModel } from '../models/content-view-model';
 
 @Injectable({ providedIn: 'root' })
@@ -40,8 +27,23 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubTestGet$Response(params?: ApiGitHubTestGet$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return apiGitHubTestGet(this.http, this.rootUrl, params, context);
+  apiGitHubTestGet$Response(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<void>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubTestGetPath, 'get');
+    if (params) {
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: '*/*', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      })
+    );
   }
 
   /**
@@ -50,7 +52,11 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubTestGet(params?: ApiGitHubTestGet$Params, context?: HttpContext): Observable<void> {
+  apiGitHubTestGet(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<void> {
     return this.apiGitHubTestGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
@@ -65,8 +71,23 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubGet$Plain$Response(params?: ApiGitHubGet$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
-    return apiGitHubGet$Plain(this.http, this.rootUrl, params, context);
+  apiGitHubGet$Plain$Response(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubGetPath, 'get');
+    if (params) {
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Array<ContentViewModel>>;
+      })
+    );
   }
 
   /**
@@ -75,7 +96,11 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubGet$Plain(params?: ApiGitHubGet$Plain$Params, context?: HttpContext): Observable<Array<ContentViewModel>> {
+  apiGitHubGet$Plain(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<Array<ContentViewModel>> {
     return this.apiGitHubGet$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ContentViewModel>>): Array<ContentViewModel> => r.body)
     );
@@ -87,8 +112,23 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubGet$Json$Response(params?: ApiGitHubGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
-    return apiGitHubGet$Json(this.http, this.rootUrl, params, context);
+  apiGitHubGet$Json$Response(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubGetPath, 'get');
+    if (params) {
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'text/json', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Array<ContentViewModel>>;
+      })
+    );
   }
 
   /**
@@ -97,7 +137,11 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubGet$Json(params?: ApiGitHubGet$Json$Params, context?: HttpContext): Observable<Array<ContentViewModel>> {
+  apiGitHubGet$Json(
+    params?: {
+    },
+    context?: HttpContext
+  ): Observable<Array<ContentViewModel>> {
     return this.apiGitHubGet$Json$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ContentViewModel>>): Array<ContentViewModel> => r.body)
     );
@@ -112,8 +156,27 @@ export class GitHubService extends BaseService {
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  apiGitHubPost$Plain$Response(params?: ApiGitHubPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<ContentViewModel>> {
-    return apiGitHubPost$Plain(this.http, this.rootUrl, params, context);
+  apiGitHubPost$Plain$Response(
+    params?: {
+      body?: {
+'files'?: Array<Blob>;
+}
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubPostPath, 'post');
+    if (params) {
+      rb.body(params.body, 'multipart/form-data');
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Array<ContentViewModel>>;
+      })
+    );
   }
 
   /**
@@ -122,9 +185,16 @@ export class GitHubService extends BaseService {
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  apiGitHubPost$Plain(params?: ApiGitHubPost$Plain$Params, context?: HttpContext): Observable<ContentViewModel> {
+  apiGitHubPost$Plain(
+    params?: {
+      body?: {
+'files'?: Array<Blob>;
+}
+    },
+    context?: HttpContext
+  ): Observable<Array<ContentViewModel>> {
     return this.apiGitHubPost$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ContentViewModel>): ContentViewModel => r.body)
+      map((r: StrictHttpResponse<Array<ContentViewModel>>): Array<ContentViewModel> => r.body)
     );
   }
 
@@ -134,8 +204,27 @@ export class GitHubService extends BaseService {
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  apiGitHubPost$Json$Response(params?: ApiGitHubPost$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<ContentViewModel>> {
-    return apiGitHubPost$Json(this.http, this.rootUrl, params, context);
+  apiGitHubPost$Json$Response(
+    params?: {
+      body?: {
+'files'?: Array<Blob>;
+}
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<Array<ContentViewModel>>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubPostPath, 'post');
+    if (params) {
+      rb.body(params.body, 'multipart/form-data');
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'text/json', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Array<ContentViewModel>>;
+      })
+    );
   }
 
   /**
@@ -144,9 +233,16 @@ export class GitHubService extends BaseService {
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  apiGitHubPost$Json(params?: ApiGitHubPost$Json$Params, context?: HttpContext): Observable<ContentViewModel> {
+  apiGitHubPost$Json(
+    params?: {
+      body?: {
+'files'?: Array<Blob>;
+}
+    },
+    context?: HttpContext
+  ): Observable<Array<ContentViewModel>> {
     return this.apiGitHubPost$Json$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ContentViewModel>): ContentViewModel => r.body)
+      map((r: StrictHttpResponse<Array<ContentViewModel>>): Array<ContentViewModel> => r.body)
     );
   }
 
@@ -159,8 +255,25 @@ export class GitHubService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  apiGitHubDelete$Response(params?: ApiGitHubDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return apiGitHubDelete(this.http, this.rootUrl, params, context);
+  apiGitHubDelete$Response(
+    params?: {
+      body?: ContentViewModel
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<void>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubDeletePath, 'delete');
+    if (params) {
+      rb.body(params.body, 'application/*+json');
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: '*/*', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      })
+    );
   }
 
   /**
@@ -169,7 +282,12 @@ export class GitHubService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  apiGitHubDelete(params?: ApiGitHubDelete$Params, context?: HttpContext): Observable<void> {
+  apiGitHubDelete(
+    params?: {
+      body?: ContentViewModel
+    },
+    context?: HttpContext
+  ): Observable<void> {
     return this.apiGitHubDelete$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
@@ -184,8 +302,25 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubFilePathGet$Response(params: ApiGitHubFilePathGet$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return apiGitHubFilePathGet(this.http, this.rootUrl, params, context);
+  apiGitHubFilePathGet$Response(
+    params: {
+      filePath: string;
+    },
+    context?: HttpContext
+  ): Observable<StrictHttpResponse<void>> {
+    const rb = new RequestBuilder(this.rootUrl, GitHubService.ApiGitHubFilePathGetPath, 'get');
+    if (params) {
+      rb.path('filePath', params.filePath, {"style":"simple"});
+    }
+
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: '*/*', context })
+    ).pipe(
+      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      })
+    );
   }
 
   /**
@@ -194,7 +329,12 @@ export class GitHubService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  apiGitHubFilePathGet(params: ApiGitHubFilePathGet$Params, context?: HttpContext): Observable<void> {
+  apiGitHubFilePathGet(
+    params: {
+      filePath: string;
+    },
+    context?: HttpContext
+  ): Observable<void> {
     return this.apiGitHubFilePathGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );

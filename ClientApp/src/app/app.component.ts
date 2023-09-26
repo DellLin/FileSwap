@@ -42,12 +42,15 @@ export class AppComponent implements OnInit {
     this.loading = true;
     this.gitHubService.apiGitHubPost$Json({
       body: {
-        file: event.files[0]
+        files: event.files
       }
     }).subscribe({
-      next: (value) => {
-        let findNode = this.contentTree.filter(f => { return f.data.name + '.txt' == value.name });
-        if (findNode.length == 0) { this.contentTree = [...this.contentTree, this.contentToTreeNode(value)]; }
+      next: (contentList) => {
+        contentList.forEach(content => {
+          let findNode = this.contentTree.filter(f => { return f.data.name + '.txt' == content.name });
+          if (findNode.length == 0) { this.contentTree = [...this.contentTree, this.contentToTreeNode(content)]; }
+
+        });
         fileUpload.clear();
         this.loading = false;
       },
