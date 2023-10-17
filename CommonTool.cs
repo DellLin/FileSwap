@@ -1,5 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace FileSwap;
@@ -30,6 +32,29 @@ public static class CommonTool
             contentType = DefaultContentType;
         }
         return contentType;
+    }
+
+    public static byte[] AecEncrypt(string key, byte[] content)
+    {
+        Aes aes = Aes.Create();
+        byte[] iv = aes.IV;
+        ICryptoTransform transform = aes.CreateEncryptor(Encoding.UTF8.GetBytes(key), iv);
+        byte[] bPlainText = content;
+        byte[] outputData = transform.TransformFinalBlock(bPlainText, 0, bPlainText.Length);
+        var result = new byte[outputData.Length + iv.Length];
+        outputData.CopyTo(result, 0);
+        iv.CopyTo(result, outputData.Length);
+        return result;
+    }
+    public static byte[] AecDecrypt(string key, byte[] content)
+    {
+        Aes aes = Aes.Create();
+        byte[] iv = content.Skip(content.Length - aes.IV.Length).ToArray();
+        content = content.Take(content.Length - aes.IV.Length).ToArray();
+        ICryptoTransform transform = aes.CreateDecryptor(Encoding.UTF8.GetBytes(key), iv);
+        byte[] bEnBase64String = content;//有可能base64String格式錯誤
+        byte[] outputData = transform.TransformFinalBlock(bEnBase64String, 0, bEnBase64String.Length);//有可能解密出錯
+        return outputData;
     }
 }
 

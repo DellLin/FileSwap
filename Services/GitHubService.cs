@@ -1,5 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 
+using System.Text;
 using Microsoft.AspNetCore.StaticFiles;
 using Octokit;
 using FileSwap.ViewModels;
@@ -14,6 +15,7 @@ public class GitHubService
     private readonly string OWNER;
     private readonly string REPO_NAME;
     private readonly string ROOT_FILE;
+    private readonly string AES_KEY;
 
     public GitHubService(GitHubClient gitHubClient,
         FileExtensionContentTypeProvider fileExtensionContentTypeProvider,
@@ -26,6 +28,7 @@ public class GitHubService
         OWNER = configuration.GetValue<string>("github:owner")!;
         REPO_NAME = configuration.GetValue<string>("github:repoName")!;
         ROOT_FILE = configuration.GetValue<string>("github:rootPath")!;
+        AES_KEY = configuration.GetValue<string>("github:aesKey")!;
     }
 
     public async Task<User> TestService()
@@ -64,7 +67,8 @@ public class GitHubService
             fileExist = false;
         }
         RepositoryContentInfo result;
-        var fileContent = CommonTool.ConvertToBase64(fileStream);
+        var encryptBytes = CommonTool.AecEncrypt(AES_KEY, fileStream.ToArray());
+        var fileContent = Convert.ToBase64String(encryptBytes);
         if (fileExist)
         {
             var existingFileSha = file.Sha;
@@ -81,9 +85,9 @@ public class GitHubService
     public async Task<byte[]> DownloadFile(string fileName)
     {
         var repositoryContents = await _gitHubClient.Repository.Content.GetRawContent(OWNER, REPO_NAME, Path.Combine(ROOT_FILE, fileName + ".txt"));
-        var fileContents = System.Text.Encoding.Default.GetString(repositoryContents);
+        var fileContents = Encoding.Default.GetString(repositoryContents);
         var binaryData = Convert.FromBase64String(fileContents);
-        return binaryData;
+        return CommonTool.AecDecrypt(AES_KEY, binaryData);
     }
     public async Task DeleteFile(ContentViewModel contentViewModel)
     {

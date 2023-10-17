@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text;
+using System.Threading;
 // Licensed to the .NET Foundation under one or more agreements.
 
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,17 @@ public class GitHubController : ControllerBase
         _gitHubService = gitHubService;
         _configuration = configuration;
     }
+
     [HttpGet("Test")]
     public async Task<ActionResult> Test()
     {
         var user = await _gitHubService.TestService();
-        return Ok(user);
+        var encryptString = CommonTool.AecEncrypt(_configuration.GetValue<string>("github:aesKey")!, Encoding.UTF8.GetBytes("hello"));
+        Console.WriteLine(encryptString);
+        var decryptString = CommonTool.AecDecrypt(_configuration.GetValue<string>("github:aesKey")!, encryptString);
+        Console.WriteLine(decryptString);
+        
+        return Ok(Encoding.UTF8.GetString(decryptString));
     }
     [HttpGet]
     public async Task<List<ContentViewModel>> GetFileList()
